@@ -19,15 +19,20 @@ public class ProductRestController {
     @Value("${baseDataUri}")
     private String baseDataUri;
 
-    @GetMapping("/list")
-    public String list() {
-        return "Pull Data : " + baseDataUri;
-    }
+    //@GetMapping("/list")
+    //public String list() {
+       // return "Pull Data : " + baseDataUri;
+    //}
 
 
     @PostMapping("/save")
     public ResponseEntity save(@RequestBody Product product) {
         return pService.save(product);
+    }
+
+    @GetMapping("/list")
+    public ResponseEntity list() {
+        return pService.list();
     }
 
 }
