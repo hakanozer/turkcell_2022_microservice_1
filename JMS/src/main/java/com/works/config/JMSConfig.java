@@ -1,8 +1,8 @@
 package com.works.config;
-
 import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
 
+import com.works.consumers.MessageConsumer;
 import lombok.RequiredArgsConstructor;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.broker.BrokerService;
@@ -28,6 +28,15 @@ public class JMSConfig {
     @Value("${jms.queue.name}")
     private String queueName;
 
+    final MessageConsumer messageConsumer;
+
+    @Bean
+    public BrokerService broker() throws Exception {
+        BrokerService broker = new BrokerService();
+        broker.addConnector(brokerUrl);
+        broker.setPersistent(false);
+        return broker;
+    }
 
     @Bean
     public ConnectionFactory connectionFactory() {
@@ -46,5 +55,17 @@ public class JMSConfig {
 
         return jmsTemplate;
     }
+
+    @Bean
+    public MessageListenerContainer defaultMessageListenerContainer(ConnectionFactory connectionFactory,
+                                                                    Destination destination) {
+        DefaultMessageListenerContainer defaultMessageListenerContainer = new DefaultMessageListenerContainer();
+        defaultMessageListenerContainer.setConnectionFactory(connectionFactory);
+        defaultMessageListenerContainer.setDestination(destination);
+        defaultMessageListenerContainer.setMessageListener(messageConsumer);
+
+        return defaultMessageListenerContainer;
+    }
+
 
 }
